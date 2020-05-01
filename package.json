@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "tsc; jasmine",
+    "test": "rm **/*.js; tsc; jasmine",
     "start": "nodemon app.ts"
   },
   "dependencies": {
