@@ -1,0 +1,9 @@
+{
+  "name": "project-flagship",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/CeasarCyrillus/project-flagship.git",
+  "author": "Ceasar Cyrillus <ceasar.cyrillus@protonmail.com>",
+  "license": "MIT",
+  "private": true
+}
