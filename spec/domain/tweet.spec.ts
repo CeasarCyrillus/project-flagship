@@ -14,6 +14,6 @@ describe("a tweet", () => {
         
         expect(() => {
             const tweet = new Tweet(Fixture.profile(), veryLongText);
-        }).toThrowError("Tweet text must be less than 280 character");
+        }).toThrowError("Tweet text must be 280 character or less");
     })
 });
