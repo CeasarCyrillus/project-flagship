@@ -1,7 +1,7 @@
 import express = require("express");
 import { Tweet } from "./domain/tweet";
 import { Profile } from "./domain/profile";
-import { Fixture } from "./spec/fixture";
+import { Fixture } from "./test/fixture";
 export const app: express.Application = express();
 
 app.get("/",  (req, res) => {
@@ -13,7 +13,7 @@ app.get("/",  (req, res) => {
 
 });
 
-const port = 9000;
+const port: Number = Math.floor(Math.random() * 1000);
 app.listen(port,  () => {
     console.log(`Visit your site here: http://localhost:${port}`);
 });

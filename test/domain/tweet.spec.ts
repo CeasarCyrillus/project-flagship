@@ -1,7 +1,8 @@
 import { Tweet } from "../../domain/tweet"
 import { Profile } from "../../domain/profile";
 import { Fixture } from "../fixture";
-describe("a tweet", () => {
+import { assert } from "chai";
+describe("Tweet", () => {
     it("throws exception if text is more than 280 characters", () => {
         const veryLongText = "Lorem ipsum dolor sit amet," +
         "consectetur adipiscing elit. Nulla aliquam tellus et eleifend vehicula." +
@@ -12,8 +13,8 @@ describe("a tweet", () => {
         " massa nunc, accumsan in nunc vel, consequat elementum massa. Nullam" +
         " efficitur odio sed ipsum interdum elementum.";
         
-        expect(() => {
+        assert.throw(() => {
             const tweet = new Tweet(Fixture.profile(), veryLongText);
-        }).toThrowError("Tweet text must be 280 character or less");
+        }, "Tweet text must be 280 character or less");
     })
 });
