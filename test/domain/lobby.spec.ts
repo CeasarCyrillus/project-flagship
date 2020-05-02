@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Lobby } from "../../domain/lobby";
+import { Fixture } from "../fixture";
 
 describe("lobby", () => {
     describe("id", () => {
@@ -18,5 +19,20 @@ describe("lobby", () => {
                 new Lobby(id);
             }).Throw("Lobby id have to be uppercase");
         })
+    });
+
+    describe("description", () => {
+        it("should have sensible default value based on id not defined", () => {
+            const lobby = new Lobby(Fixture.lobbyId);
+
+            expect(lobby.description).to.be.equal(`Lobby for game #${Fixture.lobbyId}`);
+        });
+
+        it("should be customizable", () => {
+            const expectedDescription = "Some other description";
+            const lobby = new Lobby(Fixture.lobbyId, expectedDescription);
+            lobby.description = expectedDescription;
+            expect(lobby.description).to.be.equal(expectedDescription);
+        });
     });
 });

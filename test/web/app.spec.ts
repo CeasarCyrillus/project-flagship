@@ -32,17 +32,8 @@ describe("app", () => {
           .request(app)
           .post(Config.baseUrlLobby)
           .end((err, res) => {
-            expect(res.text).to.contain("id");
-            done();
-          })
-      });
-
-      it(`POST should respond with lobby`, (done) => {
-        chai
-          .request(app)
-          .post(Config.baseUrlLobby)
-          .end((err, res) => {
-            expect(res.text).to.contain("id");
+            expect(res.body.id).not.to.be.undefined;
+            expect(res.body.description).not.to.be.undefined;
             done();
           })
       });
