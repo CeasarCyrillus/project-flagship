@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "tsc; mocha -r ts-node/register **/*.spec.ts",
+    "test": "tsc; mocha --exit -r ts-node/register **/*.spec.ts",
     "start": "nodemon app.ts"
   },
   "dependencies": {
