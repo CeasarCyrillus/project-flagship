@@ -6,7 +6,7 @@ import { Config } from "./web.config";
 chai.use(chaiHttp);
 
 describe("app", () => {
-    it(`GET ${Config.baseUrlTweet} should respond with 200 OK`, (done) => {
+    it(`GET ${Config.baseUrlTweet} should respond with tweet`, (done) => {
         chai
           .request(app)
           .get(Config.baseUrlTweet)
@@ -32,6 +32,7 @@ describe("app", () => {
           .request(app)
           .post(Config.baseUrlLobby)
           .end((err, res) => {
+            expect(res.status).to.be.equal(201);
             expect(res.body.id).not.to.be.undefined;
             expect(res.body.description).not.to.be.undefined;
             done();
