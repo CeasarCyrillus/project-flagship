@@ -32,8 +32,16 @@ describe("app", () => {
           .request(app)
           .post(Config.baseUrlLobby)
           .end((err, res) => {
-            console.log(res.body)
-            console.log(res.text);
+            expect(res.text).to.contain("id");
+            done();
+          })
+      });
+
+      it(`POST should respond with lobby`, (done) => {
+        chai
+          .request(app)
+          .post(Config.baseUrlLobby)
+          .end((err, res) => {
             expect(res.text).to.contain("id");
             done();
           })

@@ -18,7 +18,7 @@ app.get(Config.baseUrlTweet,  (req, res) => {
 app.post(Config.baseUrlLobby, (req, res) => {
     res
     .status(201)
-    .send(new Lobby());
+    .send(new Lobby(Fixture.lobbyId));
 });
 
 const port: Number = Math.floor(Math.random() * 10000);

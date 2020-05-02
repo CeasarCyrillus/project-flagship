@@ -2,13 +2,21 @@ import { expect } from "chai";
 import { Lobby } from "../../domain/lobby";
 
 describe("lobby", () => {
-    it("should have unique id when created", () => {
-        const usedIds = new Array<string>();
-        for (let i = 0; i < 8000; i++) {
-            usedIds.push(new Lobby().id);
-        }
-        const uniqueIds = new Set(usedIds).size;
-        
-        expect(usedIds.length).to.be.equal(uniqueIds);
+    describe("id", () => {
+        it("should throw error when shorter than 6 letters", () => {
+            const shortId = "SHORT";
+
+            expect(() => {
+                new Lobby(shortId);
+            }).Throw("Lobby id have to be 6 letters or more")
+        });
+
+        it("should throw error when not only uppercase", () => {
+            const id = "LongId";
+
+            expect(() => {
+                new Lobby(id);
+            }).Throw("Lobby id have to be uppercase");
+        })
     });
 });
