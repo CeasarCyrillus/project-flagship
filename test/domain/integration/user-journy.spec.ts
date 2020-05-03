@@ -20,6 +20,16 @@ describe("Create and join a lobby", () => {
             });
     }
 
+    const joinLobby = (lobbyId: string, player?: Player, ) => {
+        if(player === undefined) player = Fixture.player();
+        return chai
+            .request(app)
+            .patch(`${Config.baseUrlLobby}/${lobbyId}`)
+            .send({
+                player: player
+            });
+    }
+
     it("with default values", async () => {
         const createLobbyResponse = await createLobby();
 
@@ -31,9 +41,7 @@ describe("Create and join a lobby", () => {
         
         expect(createdLobby.description).to.contain("Lobby for game #");
 
-        const joinLobbyResponse = await chai
-            .request(app)
-            .patch(`${Config.baseUrlLobby}/${createdLobbyId}`);
+        const joinLobbyResponse = await joinLobby(createdLobbyId);
         
         expect(joinLobbyResponse.status).to.be.equal(200);
         expect(createdLobbyId).to.be.equal(joinLobbyResponse.body.id);
@@ -43,18 +51,26 @@ describe("Create and join a lobby", () => {
     it("with custom lobby id", async () => {  
         const id =  "MY-LOBBY-ID";
         const description = "Another weirdly boring generic description";
-        const createLobbyResponse = await createLobby(new Player("myUsername3"), id, description)
+        const createLobbyResponse = await createLobby(new Player("myUsername3"), id, description);
         const createdLobby = createLobbyResponse.body;
-        
         
         expect(createdLobby.id).to.be.equal(id);
         expect(createdLobby.description).to.be.equal(description);
     });
 
-    it("with several users", () => {
+    it("with several users", async () => {
         const owner = new Player(Fixture.username);
         const player1 = new Player("WittySpider");
         const player2 = new Player("StressedHorse");
+
+        const createLobbyResponse = await createLobby(owner);
+        
+        await joinLobby(createLobbyResponse.body.id, player1);
+        const lobby = await joinLobby(createLobbyResponse.body.id, player2);
+
+        expect(lobby.body.players).deep.contains(owner);
+        expect(lobby.body.players).deep.contains(player1);
+        expect(lobby.body.players).deep.contains(player2);
 
     });
 });

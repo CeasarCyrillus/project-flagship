@@ -36,9 +36,17 @@ app.post(Config.baseUrlLobby, (req, res) => {
 
 // Join Lobby
 app.patch(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
-    const lobby = db.lobbies.filter(lobby => lobby.id === req.params.lobbyId)[0];
-    if(lobby === undefined) res.status(404);
-    res.send(lobby);
+    const lobbyIndex = db.lobbies.findIndex(lobby => lobby.id === req.params.lobbyId);
+    if(lobbyIndex === -1){
+        res.status(404);
+        res.send();
+    }
+    else{
+        const player = new Player(req.body.player.username);
+        const lobby = db.lobbies[lobbyIndex];
+        lobby.players.push(player);
+        res.send(lobby);
+    }
 });
 
 const server = app.listen(0, () => {
