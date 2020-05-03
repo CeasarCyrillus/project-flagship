@@ -3,7 +3,11 @@ import { Tweet } from "./domain/tweet";
 import { Fixture } from "./test/fixture";
 import { Config } from "./test/web/web.config";
 import { Lobby } from "./domain/lobby";
-export const app: express.Application = express();
+
+export const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded());
 
 export const db = { lobbies: new Array<Lobby>() };
 
@@ -20,30 +24,22 @@ app.get(Config.baseUrlTweet,  (req, res) => {
 
 // Create Lobby
 app.post(Config.baseUrlLobby, (req, res) => {
-    const lobby = new Lobby(Fixture.lobbyId+"_CREATED");
+    const lobby = new Lobby(req.body.id, req.body.description);
     db.lobbies.push(lobby);
     
     res
-    .status(201)
-    .send(lobby);
+        .status(201)
+        .send(lobby);
 });
 
 // Join Lobby
 app.get(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
     const lobby = db.lobbies.filter(lobby => lobby.id === req.params.lobbyId)[0];
-    if(lobby === undefined) {
-        res
-            .status(404)
-            .send();
-        return;
-    }
-    
-    res
-    .status(200)
-    .send(lobby);
+    if(lobby === undefined) res.status(404);
+    res.send(lobby);
 });
 
-const port: Number = Math.floor(Math.random() * 10000);
-app.listen(port,  () => {
-    console.log(`Visit your site here: http://localhost:${port}`);
+const server = app.listen(0, () => {
+    // @ts-ignore todo: fix this
+    console.log('Listening', server.address()?.port)
 });
