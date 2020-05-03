@@ -25,7 +25,7 @@ app.get(Config.baseUrlTweet,  (req, res) => {
 
 // Create Lobby
 app.post(Config.baseUrlLobby, (req, res) => {
-    const owner = new Player(req.body.username);
+    const owner = new Player(req.body.owner.username);
     const lobby = new Lobby(req.body.id, owner, req.body.description);
     db.lobbies.push(lobby);
     
@@ -35,7 +35,7 @@ app.post(Config.baseUrlLobby, (req, res) => {
 });
 
 // Join Lobby
-app.get(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
+app.patch(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
     const lobby = db.lobbies.filter(lobby => lobby.id === req.params.lobbyId)[0];
     if(lobby === undefined) res.status(404);
     res.send(lobby);

@@ -15,6 +15,7 @@ export class Lobby {
     public id: string;
     public description: string;
     public owner: Player;
+    public players: Player[] = [];
     constructor(id: string, owner: Player, description?: string) {
         if(!id) id = getRandomId();
         if(id.length < 6) throw Error("Lobby id have to be 6 letters or more");
@@ -24,5 +25,6 @@ export class Lobby {
         this.id = id;
         this.description = description ? description : `Lobby for game #${id}`;
         this.owner = owner;
+        this.players.push(owner);
     }
 }

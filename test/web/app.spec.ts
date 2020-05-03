@@ -2,6 +2,7 @@ import { app } from "../../app";
 import { chai }from "../setup-tests"
 import { Config } from "./web.config";
 import { expect } from "chai";
+import { Fixture } from "../fixture";
 
 describe("App", () => {
     it(`GET ${Config.baseUrlTweet} should respond with tweet`, (done) => {
@@ -15,10 +16,10 @@ describe("App", () => {
     });
 
     describe(`${Config.baseUrlLobby}`, () => {
-      it(`GET should respond with 404 NOT FOUND`, (done) => {
+      it(`PATCH should respond with 404 NOT FOUND`, (done) => {
         chai
           .request(app)
-          .get(`${Config.baseUrlLobby}/NOTFOUND`)
+          .patch(`${Config.baseUrlLobby}/NOTFOUND`)
           .end((err, res) => {
             expect(res.status).equal(404);
             done();
@@ -31,7 +32,7 @@ describe("App", () => {
           .post(Config.baseUrlLobby)
           .type("application/x-www-form-urlencoded")
           .send({
-            username: "FakeUsername"
+            owner: {username: Fixture.username}
           })
           .end((err, res) => {
             expect(res.status).to.be.equal(201);

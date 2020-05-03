@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { Lobby } from "../../domain/lobby";
 import { Fixture } from "../fixture";
+import { Player } from "../../domain/player";
 
 describe("Lobby", () => {
     describe("id", () => {
@@ -18,6 +19,12 @@ describe("Lobby", () => {
             expect(() => {
                 new Lobby(id, Fixture.player());
             }).Throw("Lobby id have to be uppercase");
+        })
+
+        it("should have random default value", () => {
+            const lobby = new Lobby(Fixture.undefined, Fixture.player())
+            
+            expect(lobby.id).to.not.be.undefined;
         })
     });
 
@@ -42,5 +49,13 @@ describe("Lobby", () => {
                 new Lobby(Fixture.lobbyId, Fixture.undefined);
             }).Throw("Lobby must have owner");
         });
+
+        it("should be added to players list", () => {
+            const owner = new Player(Fixture.username);
+            
+            const lobbby = new Lobby(Fixture.lobbyId, owner);
+            
+            expect(lobbby.players).contain(owner);
+        })
     });
 });
