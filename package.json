@@ -10,6 +10,15 @@
     "test": "tsc; nyc mocha --exit -r ts-node/register **/*.spec.ts",
     "start": "nodemon app.ts"
   },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "reporter": [
+      "text"
+    ]
+  },
   "dependencies": {
     "@types/chai-http": "^4.2.0",
     "@types/express": "^4.17.6",
@@ -17,6 +26,7 @@
     "express": "^4.17.1",
     "nodemon": "^2.0.3",
     "nyc": "^15.0.1",
+    "source-map-support": "^0.5.19",
     "typescript": "^3.8.3"
   },
   "devDependencies": {

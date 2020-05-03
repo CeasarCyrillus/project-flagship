@@ -9,6 +9,7 @@
     "strictPropertyInitialization": true,  /* Enable strict checking of property initialization in classes. */
     "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "sourceMap": true
   }
 }
