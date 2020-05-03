@@ -5,6 +5,9 @@ import { Config } from "./test/web/web.config";
 import { Lobby } from "./domain/lobby";
 export const app: express.Application = express();
 
+export const db = { lobbies: new Array<Lobby>() };
+
+// Get tweet
 app.get(Config.baseUrlTweet,  (req, res) => {
     res
     .status(200)
@@ -15,10 +18,29 @@ app.get(Config.baseUrlTweet,  (req, res) => {
     " Loves our Military and our Vets...."));
 });
 
+// Create Lobby
 app.post(Config.baseUrlLobby, (req, res) => {
+    const lobby = new Lobby(Fixture.lobbyId+"_CREATED");
+    db.lobbies.push(lobby);
+    
     res
     .status(201)
-    .send(new Lobby(Fixture.lobbyId));
+    .send(lobby);
+});
+
+// Join Lobby
+app.get(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
+    const lobby = db.lobbies.filter(lobby => lobby.id === req.params.lobbyId)[0];
+    if(lobby === undefined) {
+        res
+            .status(404)
+            .send();
+        return;
+    }
+    
+    res
+    .status(200)
+    .send(lobby);
 });
 
 const port: Number = Math.floor(Math.random() * 10000);

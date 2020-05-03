@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Lobby } from "../../domain/lobby";
 import { Fixture } from "../fixture";
 
-describe("lobby", () => {
+describe("Lobby", () => {
     describe("id", () => {
         it("should throw error when shorter than 6 letters", () => {
             const shortId = "SHORT";
