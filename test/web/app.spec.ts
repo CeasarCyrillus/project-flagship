@@ -29,10 +29,15 @@ describe("App", () => {
         chai
           .request(app)
           .post(Config.baseUrlLobby)
+          .type("application/x-www-form-urlencoded")
+          .send({
+            username: "FakeUsername"
+          })
           .end((err, res) => {
             expect(res.status).to.be.equal(201);
             expect(res.body.id).not.to.be.undefined;
             expect(res.body.description).not.to.be.undefined;
+            expect(res.body.owner).not.to.be.undefined;
             done();
           })
       });

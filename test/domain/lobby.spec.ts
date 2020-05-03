@@ -8,7 +8,7 @@ describe("Lobby", () => {
             const shortId = "SHORT";
 
             expect(() => {
-                new Lobby(shortId, Fixture.player);
+                new Lobby(shortId, Fixture.player());
             }).Throw("Lobby id have to be 6 letters or more")
         });
 
@@ -16,21 +16,21 @@ describe("Lobby", () => {
             const id = "LongId";
 
             expect(() => {
-                new Lobby(id, Fixture.player);
+                new Lobby(id, Fixture.player());
             }).Throw("Lobby id have to be uppercase");
         })
     });
 
     describe("description", () => {
         it("should have sensible default value based on id not defined", () => {
-            const lobby = new Lobby(Fixture.lobbyId, Fixture.player);
+            const lobby = new Lobby(Fixture.lobbyId, Fixture.player());
 
             expect(lobby.description).to.be.equal(`Lobby for game #${Fixture.lobbyId}`);
         });
 
         it("should be customizable", () => {
             const expectedDescription = "Some other description";
-            const lobby = new Lobby(Fixture.lobbyId, expectedDescription);
+            const lobby = Fixture.lobbby();
             lobby.description = expectedDescription;
             expect(lobby.description).to.be.equal(expectedDescription);
         });

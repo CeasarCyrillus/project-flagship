@@ -3,11 +3,16 @@ import { app } from "../../../app";
 import { Config } from "../../web/web.config";
 import { expect } from "chai";
 import { Lobby } from "../../../domain/lobby";
+import { Fixture } from "../../fixture";
 describe("Create and join a lobby", () => {
     it("with default values", async () => {
         const createLobbyResponse = await chai
             .request(app)
-            .post(Config.baseUrlLobby);
+            .post(Config.baseUrlLobby)
+            .type("application/x-www-form-urlencoded")
+            .send({
+                username: Fixture.username
+            });
 
         expect(createLobbyResponse.status).to.be.equal(201);
 
@@ -36,7 +41,7 @@ describe("Create and join a lobby", () => {
         const createLobbyResponse = await chai
             .request(app)
             .post(Config.baseUrlLobby)
-            .set('content-type', 'application/x-www-form-urlencoded')
+            .type("application/x-www-form-urlencoded")
             .send(requestData);
 
         const createdLobby = createLobbyResponse.body;

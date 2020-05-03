@@ -25,7 +25,7 @@ app.get(Config.baseUrlTweet,  (req, res) => {
 
 // Create Lobby
 app.post(Config.baseUrlLobby, (req, res) => {
-    const owner = new Player();
+    const owner = new Player(req.body.username);
     const lobby = new Lobby(req.body.id, owner, req.body.description);
     db.lobbies.push(lobby);
     
