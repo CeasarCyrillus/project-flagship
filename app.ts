@@ -3,6 +3,7 @@ import { Tweet } from "./domain/tweet";
 import { Fixture } from "./test/fixture";
 import { Config } from "./test/web/web.config";
 import { Lobby } from "./domain/lobby";
+import { Player } from "./domain/player";
 
 export const app = express();
 
@@ -24,7 +25,8 @@ app.get(Config.baseUrlTweet,  (req, res) => {
 
 // Create Lobby
 app.post(Config.baseUrlLobby, (req, res) => {
-    const lobby = new Lobby(req.body.id, req.body.description);
+    const owner = new Player();
+    const lobby = new Lobby(req.body.id, owner, req.body.description);
     db.lobbies.push(lobby);
     
     res

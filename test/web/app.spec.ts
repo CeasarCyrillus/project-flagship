@@ -14,7 +14,7 @@ describe("App", () => {
           })
     });
 
-    describe(`${Config.baseUrlLobby}/NOTFOUND`, () => {
+    describe(`${Config.baseUrlLobby}`, () => {
       it(`GET should respond with 404 NOT FOUND`, (done) => {
         chai
           .request(app)
