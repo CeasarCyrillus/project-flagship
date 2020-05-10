@@ -1,4 +1,3 @@
-import LobbyEntity from "./lobby.entity";
 import { ConnectionOptions } from "typeorm";
 
 const databaseConfig: ConnectionOptions = {
@@ -9,7 +8,7 @@ const databaseConfig: ConnectionOptions = {
     password: "admin",
     database: "ceasarcyrillus",
     entities: [
-        LobbyEntity
+        __dirname + "*.ts"
     ],
     synchronize: true,
     logging: false
