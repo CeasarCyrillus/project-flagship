@@ -6,9 +6,9 @@ import { Lobby } from "./domain/lobby";
 import LobbyEntity  from "./entity/lobby.entity";
 import { Player } from "./domain/player";
 import "reflect-metadata";
-import { createConnection } from "typeorm";
-import databaseConfig from "./entity/database-config";
+import { createConnection, ConnectionOptions } from "typeorm";
 import PlayerEntity from "./entity/player.entity";
+import { developmentDatabaseConfig, testDatabaseConfig } from "./entity/database-config";
 
 export const app = express();
 
@@ -17,23 +17,22 @@ app.use(express.urlencoded());
 
 export const db = { lobbies: new Array<Lobby>() };
 
+let databaseConfig: ConnectionOptions;
+const env: string = app.settings.env;
+if(env === "development") {
+    databaseConfig = developmentDatabaseConfig;
+} else if(env === "test") {
+    databaseConfig = testDatabaseConfig;
+}
+else {
+    throw new Error("Unknown environment: " + env);
+}
+
 createConnection(databaseConfig).then(async connection => {
     const lobbyRepository = connection.getRepository(LobbyEntity);
-    
-    // let owner = new PlayerEntity();
-    // owner.username = "Ceasar Cyrillus"
-    
-    // let lobby = new LobbyEntity();
-    // lobby.description = "A casual lobby for y'all bithces";
-    // lobby.owner = owner;
-
-    // await lobbyRepository.save(lobby);
-    
-    
-    const lobbies = await lobbyRepository.find({ relations: ["owner"] });
-    console.log(lobbies);
-
-}).catch(error => console.log(error));
+}).catch(error => {
+    throw new Error(error);
+});
 
 // Get tweet
 app.get(Config.baseUrlTweet,  (req, res) => {

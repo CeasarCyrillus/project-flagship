@@ -7,10 +7,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "tsc; nyc mocha --exit -r ts-node/register **/*.spec.ts",
-    "start": "yarn stop; yarn start:db; nodemon app.ts",
+    "test": "yarn restart:db; tsc;NODE_ENV=test nyc mocha --exit -r ts-node/register **/*.spec.ts",
+    "start": "yarn restart:db; nodemon app.ts",
     "start:db": "pg_ctl -D database start",
-    "stop": "pg_ctl -D database stop"
+    "stop:db": "pg_ctl -D database stop",
+    "restart:db": "yarn stop:db; yarn start:db"
   },
   "nyc": {
     "extension": [
