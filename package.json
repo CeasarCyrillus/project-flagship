@@ -9,8 +9,8 @@
   "scripts": {
     "test": "tsc; nyc mocha --exit -r ts-node/register **/*.spec.ts",
     "start": "yarn stop; yarn start:db; nodemon app.ts",
-    "start:db": "pg_ctl -D db/data start",
-    "stop": "pg_ctl -D db/data stop"
+    "start:db": "pg_ctl -D database start",
+    "stop": "pg_ctl -D database stop"
   },
   "nyc": {
     "extension": [

@@ -1,5 +1,6 @@
 import { Player } from "../domain/player";
-import {Entity, Column, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, OneToOne, JoinColumn} from "typeorm";
+import PlayerEntity from "./player.entity";
 
 @Entity()
 class LobbyEntity {
@@ -8,9 +9,12 @@ class LobbyEntity {
 
     @Column()
     public description: string;
-    
-    @Column()
-    public owner: string;
+
+    @OneToOne(type => PlayerEntity, player => player.lobby, {
+        cascade: true
+    })
+    @JoinColumn()
+    public owner: PlayerEntity;
 
 }
 

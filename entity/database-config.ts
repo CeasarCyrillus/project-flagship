@@ -1,14 +1,17 @@
 import { ConnectionOptions } from "typeorm";
+import LobbyEntity from "./lobby.entity";
+import PlayerEntity from "./player.entity";
 
 const databaseConfig: ConnectionOptions = {
     type: "postgres",
-    host: "localhost",
+    host: "127.0.0.1",
     port: 5432,
     username: "ceasarcyrillus",
-    password: "admin",
-    database: "ceasarcyrillus",
+    password: "",
+    database: "project-flagship",
     entities: [
-        __dirname + "*.ts"
+        LobbyEntity,
+        PlayerEntity
     ],
     synchronize: true,
     logging: false

@@ -8,6 +8,7 @@ import { Player } from "./domain/player";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 import databaseConfig from "./entity/database-config";
+import PlayerEntity from "./entity/player.entity";
 
 export const app = express();
 
@@ -16,17 +17,22 @@ app.use(express.urlencoded());
 
 export const db = { lobbies: new Array<Lobby>() };
 
-createConnection(databaseConfig).then(connection => {
-    // here you can start to work with your entities
-    let lobby = new LobbyEntity();
-    lobby.description = "Hello Database world!";
-    lobby.owner = "SomeRandomDude";
+createConnection(databaseConfig).then(async connection => {
+    const lobbyRepository = connection.getRepository(LobbyEntity);
+    
+    // let owner = new PlayerEntity();
+    // owner.username = "Ceasar Cyrillus"
+    
+    // let lobby = new LobbyEntity();
+    // lobby.description = "A casual lobby for y'all bithces";
+    // lobby.owner = owner;
 
-    return connection.manager
-            .save(lobby)
-            .then(lobby => {
-                console.log("Lobby has been saved. Lobby id is", lobby.id);
-            });
+    // await lobbyRepository.save(lobby);
+    
+    
+    const lobbies = await lobbyRepository.find({ relations: ["owner"] });
+    console.log(lobbies);
+
 }).catch(error => console.log(error));
 
 // Get tweet
