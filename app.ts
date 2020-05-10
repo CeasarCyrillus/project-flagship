@@ -2,7 +2,8 @@ import express = require("express");
 import { Tweet } from "./domain/tweet";
 import { Fixture } from "./test/fixture";
 import { Config } from "./test/web/web.config";
-import { Lobby } from "./domain/lobby.entity";
+import { Lobby } from "./domain/lobby";
+import LobbyEntity  from "./entity/lobby.entity";
 import { Player } from "./domain/player";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
@@ -22,7 +23,7 @@ createConnection({
     password: "admin",
     database: "ceasarcyrillus",
     entities: [
-        Lobby
+        LobbyEntity
     ],
     synchronize: true,
     logging: false

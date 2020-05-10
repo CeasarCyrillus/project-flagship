@@ -1,5 +1,4 @@
 import { Player } from "./player";
-import {Entity, Column, PrimaryColumn, OneToMany} from "typeorm";
 
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -12,15 +11,9 @@ const getRandomId = () => {
     return result.join("");
 }
 
-@Entity()
 export class Lobby {
-    @PrimaryColumn()
     public id: string;
-
-    @Column()
     public description: string;
-    
-
     public owner: Player;
 
     constructor(id: string, owner: Player, description?: string) {

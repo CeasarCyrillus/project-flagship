@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Lobby } from "../../domain/lobby.entity";
+import { Lobby } from "../../domain/lobby";
 import { Fixture } from "../fixture";
 import { Player } from "../../domain/player";
 
