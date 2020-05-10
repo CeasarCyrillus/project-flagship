@@ -1,22 +1,17 @@
 import { Player } from "../domain/player";
-import {Entity, Column, PrimaryColumn} from "typeorm";
+import {Entity, Column, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
 class LobbyEntity {
-    @PrimaryColumn()
-    public id: string;
+    @PrimaryGeneratedColumn()
+    public id: number;
 
     @Column()
     public description: string;
     
+    @Column()
+    public owner: string;
 
-    public owner: Player;
-
-    constructor(id: string, owner: Player, description?: string) {
-        this.id = id;
-        this.description = description ? description : `Lobby for game #${id}`;
-        this.owner = owner;
-    }
 }
 
 export default LobbyEntity;

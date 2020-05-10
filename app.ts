@@ -18,6 +18,15 @@ export const db = { lobbies: new Array<Lobby>() };
 
 createConnection(databaseConfig).then(connection => {
     // here you can start to work with your entities
+    let lobby = new LobbyEntity();
+    lobby.description = "Hello Database world!";
+    lobby.owner = "SomeRandomDude";
+
+    return connection.manager
+            .save(lobby)
+            .then(lobby => {
+                console.log("Lobby has been saved. Lobby id is", lobby.id);
+            });
 }).catch(error => console.log(error));
 
 // Get tweet
