@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Lobby } from "../../domain/lobby";
+import { Lobby } from "../../domain/lobby.entity";
 import { Fixture } from "../fixture";
 import { Player } from "../../domain/player";
 
@@ -55,7 +55,7 @@ describe("Lobby", () => {
             
             const lobbby = new Lobby(Fixture.lobbyId, owner);
             
-            expect(lobbby.players).contain(owner);
+            expect(lobbby).contain(owner);
         })
     });
 });

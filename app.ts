@@ -2,8 +2,10 @@ import express = require("express");
 import { Tweet } from "./domain/tweet";
 import { Fixture } from "./test/fixture";
 import { Config } from "./test/web/web.config";
-import { Lobby } from "./domain/lobby";
+import { Lobby } from "./domain/lobby.entity";
 import { Player } from "./domain/player";
+import "reflect-metadata";
+import { createConnection } from "typeorm";
 
 export const app = express();
 
@@ -11,6 +13,22 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 export const db = { lobbies: new Array<Lobby>() };
+
+createConnection({
+    type: "postgres",
+    host: "localhost",
+    port: 5432,
+    username: "ceasarcyrillus",
+    password: "admin",
+    database: "ceasarcyrillus",
+    entities: [
+        Lobby
+    ],
+    synchronize: true,
+    logging: false
+}).then(connection => {
+    // here you can start to work with your entities
+}).catch(error => console.log(error));
 
 // Get tweet
 app.get(Config.baseUrlTweet,  (req, res) => {
@@ -44,7 +62,6 @@ app.patch(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
     else{
         const player = new Player(req.body.player.username);
         const lobby = db.lobbies[lobbyIndex];
-        lobby.players.push(player);
         res.send(lobby);
     }
 });

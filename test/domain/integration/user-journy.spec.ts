@@ -2,7 +2,7 @@ import { chai } from "../../setup-tests";
 import { app } from "../../../app";
 import { Config } from "../../web/web.config";
 import { expect } from "chai";
-import { Lobby } from "../../../domain/lobby";
+import { Lobby } from "../../../domain/lobby.entity";
 import { Fixture } from "../../fixture";
 import { Player } from "../../../domain/player";
 describe("Create and join a lobby", () => {

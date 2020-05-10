@@ -1,5 +1,4 @@
 import { Tweet } from "../../domain/tweet"
-import { Profile } from "../../domain/profile";
 import { Fixture } from "../fixture";
 import { expect } from "chai";
 describe("Tweet", () => {

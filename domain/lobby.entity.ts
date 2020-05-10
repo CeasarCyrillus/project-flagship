@@ -1,4 +1,5 @@
 import { Player } from "./player";
+import {Entity, Column, PrimaryColumn, OneToMany} from "typeorm";
 
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -11,11 +12,17 @@ const getRandomId = () => {
     return result.join("");
 }
 
+@Entity()
 export class Lobby {
+    @PrimaryColumn()
     public id: string;
+
+    @Column()
     public description: string;
+    
+
     public owner: Player;
-    public players: Player[] = [];
+
     constructor(id: string, owner: Player, description?: string) {
         if(!id) id = getRandomId();
         if(id.length < 6) throw Error("Lobby id have to be 6 letters or more");
@@ -25,6 +32,5 @@ export class Lobby {
         this.id = id;
         this.description = description ? description : `Lobby for game #${id}`;
         this.owner = owner;
-        this.players.push(owner);
     }
 }
