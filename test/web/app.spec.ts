@@ -5,16 +5,6 @@ import { expect } from "chai";
 import { Fixture } from "../fixture";
 
 describe("App", () => {
-    it(`GET ${Config.baseUrlTweet} should respond with tweet`, (done) => {
-        chai
-          .request(app)
-          .get(Config.baseUrlTweet)
-          .end((err, res) => {
-            expect(res.status).equal(200);
-            done();
-          })
-    });
-
     describe(`${Config.baseUrlLobby}`, () => {
       it(`PATCH should respond with 404 NOT FOUND`, (done) => {
         chai

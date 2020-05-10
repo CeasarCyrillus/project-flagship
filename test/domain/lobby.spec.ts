@@ -53,9 +53,8 @@ describe("Lobby", () => {
         it("should be added to players list", () => {
             const owner = new Player(Fixture.username);
             
-            const lobbby = new Lobby(Fixture.lobbyId, owner);
-            
-            expect(lobbby).contain(owner);
+            const lobby = new Lobby(Fixture.lobbyId, owner);
+            expect(lobby.players).contain(owner);
         })
     });
 });

@@ -15,6 +15,7 @@ export class Lobby {
     public id: string;
     public description: string;
     public owner: Player;
+    public players: Player[];
 
     constructor(id: string, owner: Player, description?: string) {
         if(!id) id = getRandomId();
@@ -25,5 +26,7 @@ export class Lobby {
         this.id = id;
         this.description = description ? description : `Lobby for game #${id}`;
         this.owner = owner;
+        this.players = new Array<Player>();
+        this.players.push(owner);
     }
 }

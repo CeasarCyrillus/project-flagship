@@ -1,13 +1,10 @@
 import express = require("express");
-import { Tweet } from "./domain/tweet";
-import { Fixture } from "./test/fixture";
 import { Config } from "./test/web/web.config";
 import { Lobby } from "./domain/lobby";
 import LobbyEntity  from "./entity/lobby.entity";
 import { Player } from "./domain/player";
 import "reflect-metadata";
 import { createConnection, ConnectionOptions } from "typeorm";
-import PlayerEntity from "./entity/player.entity";
 import { developmentDatabaseConfig, testDatabaseConfig } from "./entity/database-config";
 
 export const app = express();
@@ -34,17 +31,6 @@ createConnection(databaseConfig).then(async connection => {
     throw new Error(error);
 });
 
-// Get tweet
-app.get(Config.baseUrlTweet,  (req, res) => {
-    res
-    .status(200)
-    .send(new Tweet(Fixture.profile(), "Tom Tiffany (@TomTiffanyWI) is a " + 
-    " Great Advocate for the incredible people of Wisconsin (WI07). We need" +
-    " Tom in Congress to help us Make America Great Again! He will Fight for Small" + 
-    " Business, supports our Incredible Farmers," +
-    " Loves our Military and our Vets...."));
-});
-
 // Create Lobby
 app.post(Config.baseUrlLobby, (req, res) => {
     const owner = new Player(req.body.owner.username);
@@ -66,6 +52,7 @@ app.patch(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
     else{
         const player = new Player(req.body.player.username);
         const lobby = db.lobbies[lobbyIndex];
+        lobby.players.push(player);
         res.send(lobby);
     }
 });
