@@ -7,7 +7,7 @@ export class Fixture {
     static profilename = "Donald J. Trump";
     static verified = true;
     static profileName = "realDonaldTrump"
-    static lobbyId = "QNYDKA";
+    static lobbyCode = "QNYDKA";
     static username = "WiseAnt";
     static player = () => new Player("WiseAnt");
     static profile = () => new Profile(
@@ -16,7 +16,7 @@ export class Fixture {
         Fixture.verified,
         Fixture.profileName);
     
-    static lobbby = () => new Lobby(Fixture.lobbyId, Fixture.player());
+    static lobbby = () => new Lobby(Fixture.lobbyCode, Fixture.player());
     
     static undefined: any;
 }

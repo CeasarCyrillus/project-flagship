@@ -24,15 +24,15 @@ describe("Lobby", () => {
         it("should have random default value", () => {
             const lobby = new Lobby(Fixture.undefined, Fixture.player())
             
-            expect(lobby.id).to.not.be.undefined;
+            expect(lobby.code).to.not.be.undefined;
         })
     });
 
     describe("description", () => {
         it("should have sensible default value based on id not defined", () => {
-            const lobby = new Lobby(Fixture.lobbyId, Fixture.player());
+            const lobby = new Lobby(Fixture.lobbyCode, Fixture.player());
 
-            expect(lobby.description).to.be.equal(`Lobby for game #${Fixture.lobbyId}`);
+            expect(lobby.description).to.be.equal(`Lobby for game #${Fixture.lobbyCode}`);
         });
 
         it("should be customizable", () => {
@@ -46,14 +46,14 @@ describe("Lobby", () => {
     describe("owner", () => {
         it("should throw error when undefined", () => {
             expect(() => {
-                new Lobby(Fixture.lobbyId, Fixture.undefined);
+                new Lobby(Fixture.lobbyCode, Fixture.undefined);
             }).Throw("Lobby must have owner");
         });
 
         it("should be added to players list", () => {
             const owner = new Player(Fixture.username);
             
-            const lobby = new Lobby(Fixture.lobbyId, owner);
+            const lobby = new Lobby(Fixture.lobbyCode, owner);
             expect(lobby.players).contain(owner);
         })
     });

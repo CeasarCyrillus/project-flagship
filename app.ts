@@ -1,59 +1,46 @@
+import "reflect-metadata";
 import express = require("express");
 import { Config } from "./test/web/web.config";
 import { Lobby } from "./domain/lobby";
-import LobbyEntity  from "./entity/lobby.entity";
 import { Player } from "./domain/player";
-import "reflect-metadata";
-import { createConnection, ConnectionOptions } from "typeorm";
-import { developmentDatabaseConfig, testDatabaseConfig } from "./entity/database-config";
+import { getDatabaseConnection, connectDatabase } from "./service/service";
+import LobbyEntity from "./service/entity/lobby.entity";
+import PlayerEntity from "./service/entity/player.entity";
 
 export const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded());
 
-export const db = { lobbies: new Array<Lobby>() };
-
-let databaseConfig: ConnectionOptions;
-const env: string = app.settings.env;
-if(env === "development") {
-    databaseConfig = developmentDatabaseConfig;
-} else if(env === "test") {
-    databaseConfig = testDatabaseConfig;
-}
-else {
-    throw new Error("Unknown environment: " + env);
-}
-
-createConnection(databaseConfig).then(async connection => {
-    const lobbyRepository = connection.getRepository(LobbyEntity);
-}).catch(error => {
-    throw new Error(error);
-});
+const config = getDatabaseConnection(app.settings.env);
+const database = connectDatabase(config);
 
 // Create Lobby
-app.post(Config.baseUrlLobby, (req, res) => {
+app.post(Config.baseUrlLobby, async (req, res) => {
+    const service = await database;
+
     const owner = new Player(req.body.owner.username);
-    const lobby = new Lobby(req.body.id, owner, req.body.description);
-    db.lobbies.push(lobby);
+    const lobby = new Lobby(req.body.code, owner, req.body.description);
+    await service.lobbyRepository.add(lobby);
     
-    res
-        .status(201)
-        .send(lobby);
+    return res
+    .status(201)
+    .send(lobby);
+    
 });
 
 // Join Lobby
-app.patch(`${Config.baseUrlLobby}/:lobbyId`, (req, res) => {
-    const lobbyIndex = db.lobbies.findIndex(lobby => lobby.id === req.params.lobbyId);
-    if(lobbyIndex === -1){
-        res.status(404);
-        res.send();
+app.patch(`${Config.baseUrlLobby}/:lobbyCode`, async (req, res) => {
+    const service = await database;
+    const lobby = await service.lobbyRepository.getByCode(req.params.lobbyCode);
+    if(lobby === undefined){
+        return res.status(404).send();
     }
     else{
         const player = new Player(req.body.player.username);
-        const lobby = db.lobbies[lobbyIndex];
-        lobby.players.push(player);
-        res.send(lobby);
+        lobby.players.push(player)
+        await service.lobbyRepository.update(lobby);
+        return res.send(lobby);
     }
 });
 

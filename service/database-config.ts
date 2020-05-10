@@ -1,6 +1,6 @@
 import { ConnectionOptions } from "typeorm";
-import LobbyEntity from "./lobby.entity";
-import PlayerEntity from "./player.entity";
+import LobbyEntity from "./entity/lobby.entity";
+import PlayerEntity from "./entity/player.entity";
 
 export const developmentDatabaseConfig: ConnectionOptions = {
     type: "postgres",

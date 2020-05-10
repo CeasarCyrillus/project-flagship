@@ -6,8 +6,7 @@ import { Lobby } from "../../../domain/lobby";
 import { Fixture } from "../../fixture";
 import { Player } from "../../../domain/player";
 describe("Create and join a lobby", () => {
-
-    const createLobby = (owner?: Player, id?: string, description?: string) => {
+    const createLobby = (owner?: Player, code?: string, description?: string) => {
         if(!owner) owner = new Player(Fixture.username);
         return chai
             .request(app)
@@ -16,7 +15,7 @@ describe("Create and join a lobby", () => {
             .send({
                 owner: owner,
                 description: description,
-                id: id
+                code: code
             });
     }
 
@@ -32,29 +31,31 @@ describe("Create and join a lobby", () => {
 
     it("with default values", async () => {
         const createLobbyResponse = await createLobby();
-
+        console.log("Response is ")
+        console.log(createLobbyResponse.body)
         expect(createLobbyResponse.status).to.be.equal(201);
 
         const createdLobby: Lobby = createLobbyResponse.body;
-        const createdLobbyId = createdLobby.id;
+        const createdLobbyCode = createdLobby.code;
         
         
         expect(createdLobby.description).to.contain("Lobby for game #");
 
-        const joinLobbyResponse = await joinLobby(createdLobbyId);
+        const joinLobbyResponse = await joinLobby(createdLobbyCode);
         
         expect(joinLobbyResponse.status).to.be.equal(200);
-        expect(createdLobbyId).to.be.equal(joinLobbyResponse.body.id);
+        expect(createLobbyResponse.body.id).to.be.equal(joinLobbyResponse.body.id);
+        expect(createdLobbyCode).to.be.equal(joinLobbyResponse.body.code);
         expect(createLobbyResponse.body.owner.username).to.be.equal(Fixture.username);
     })
 
     it("with custom lobby id", async () => {  
-        const id =  "MY-LOBBY-ID";
+        const code =  "MY-LOBBY-CODE";
         const description = "Another weirdly boring generic description";
-        const createLobbyResponse = await createLobby(new Player("myUsername3"), id, description);
+        const createLobbyResponse = await createLobby(new Player("myUsername3"), code, description);
         const createdLobby = createLobbyResponse.body;
         
-        expect(createdLobby.id).to.be.equal(id);
+        expect(createdLobby.code).to.be.equal(code);
         expect(createdLobby.description).to.be.equal(description);
     });
 
