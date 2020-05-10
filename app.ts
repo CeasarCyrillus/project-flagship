@@ -7,6 +7,7 @@ import LobbyEntity  from "./entity/lobby.entity";
 import { Player } from "./domain/player";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
+import databaseConfig from "./entity/database-config";
 
 export const app = express();
 
@@ -15,19 +16,7 @@ app.use(express.urlencoded());
 
 export const db = { lobbies: new Array<Lobby>() };
 
-createConnection({
-    type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "ceasarcyrillus",
-    password: "admin",
-    database: "ceasarcyrillus",
-    entities: [
-        LobbyEntity
-    ],
-    synchronize: true,
-    logging: false
-}).then(connection => {
+createConnection(databaseConfig).then(connection => {
     // here you can start to work with your entities
 }).catch(error => console.log(error));
 
