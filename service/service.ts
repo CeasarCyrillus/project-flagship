@@ -31,23 +31,25 @@ class LobbyRepository {
         entity.code = lobby.code;
         entity.description = lobby.description;
 
-        const owner = new PlayerEntity();
-        owner.username = lobby.owner.username;
-        entity.owner = owner;
+        entity.players = lobby.players.map(player => {
+            const isOwner = player.username === lobby.owner.username;
+            return new PlayerEntity(player.username, isOwner);
+        });
 
         return entity;
     }
 
     private toDomain = (entity: LobbyEntity) => {
-        const owner = new Player(entity.owner.username);
+        const owner = new Player(entity.players.find(player => player.isOwner).username);
         const lobby = new Lobby(entity.code, owner, entity.description);
+        lobby.players = entity.players.map(entity => new Player(entity.username))
         lobby.id = entity.id;
         return lobby;
     }
 
     private save = async (lobby: LobbyEntity) => this.repository.save(lobby);
 
-    public add = async (lobby: Lobby) => {
+    public add = async (lobby: Lobby): Promise<Lobby> => {
         const entity = await this.save(this.toEntity(lobby))
         lobby.id = entity.id;
         return lobby;
@@ -56,9 +58,8 @@ class LobbyRepository {
     public getByCode = async (code: string): Promise<Lobby | undefined> => {
         const entity = await this.repository.findOne({ where: {
             code: code
-        },
-        relations: ["owner"]}
-        );
+        }, 
+        relations: ["players"]});
 
         if(entity === undefined) return undefined;
         return this.toDomain(entity);
@@ -69,10 +70,12 @@ class LobbyRepository {
         await this.repository.remove(allLobbies);
     }
 
-    public update = async (lobby: Lobby) => {
+    public update = async (lobby: Lobby): Promise<Lobby> => {
         const entity = this.toEntity(lobby);
         entity.id = lobby.id;
-        this.save(entity);
+        await this.save(entity);
+
+        return this.toDomain(entity);
     }
 }
 

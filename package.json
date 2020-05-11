@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "yarn restart:db; tsc;NODE_ENV=test nyc mocha --exit -r ts-node/register **/*.spec.ts",
+    "test": "tsc;NODE_ENV=test nyc mocha --exit -r ts-node/register **/*.spec.ts",
     "start": "yarn restart:db; nodemon app.ts",
     "start:db": "pg_ctl -D database start",
     "stop:db": "pg_ctl -D database stop",
@@ -33,6 +33,7 @@
     "pg": "^8.1.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.19",
+    "sqlite3": "^4.2.0",
     "typeorm": "^0.2.24",
     "typescript": "^3.8.3"
   },

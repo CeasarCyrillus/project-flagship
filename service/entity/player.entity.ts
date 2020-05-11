@@ -1,6 +1,5 @@
-import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, Entity } from "typeorm";
+import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, Entity, ManyToOne } from "typeorm";
 import LobbyEntity from "./lobby.entity";
-import { Player } from "../../domain/player";
 
 @Entity()
 class PlayerEntity {
@@ -10,8 +9,16 @@ class PlayerEntity {
     @Column()
     public username: string;
 
-    @OneToOne(type => LobbyEntity, lobby => lobby.owner)
+    @Column()
+    public isOwner: boolean
+
+    @ManyToOne(type => LobbyEntity, lobby => lobby.players)
     public lobby: LobbyEntity;
+
+    constructor(username: string, isOwner: boolean) {
+        this.username = username;
+        this.isOwner = isOwner;
+    }
 }
 
 export default PlayerEntity;

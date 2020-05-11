@@ -18,12 +18,8 @@ export const developmentDatabaseConfig: ConnectionOptions = {
 }
 
 export const testDatabaseConfig: ConnectionOptions = {
-    type: "postgres",
-    host: "127.0.0.1",
-    port: 5432,
-    username: "ceasarcyrillus",
-    password: "",
-    database: "test-project-flagship",
+    type: "sqlite",
+    database: ":memory:",
     entities: [
         LobbyEntity,
         PlayerEntity

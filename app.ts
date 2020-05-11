@@ -21,27 +21,23 @@ app.post(Config.baseUrlLobby, async (req, res) => {
 
     const owner = new Player(req.body.owner.username);
     const lobby = new Lobby(req.body.code, owner, req.body.description);
+    
     await service.lobbyRepository.add(lobby);
     
-    return res
-    .status(201)
-    .send(lobby);
-    
+    return res.status(201).send(lobby);  
 });
 
 // Join Lobby
 app.patch(`${Config.baseUrlLobby}/:lobbyCode`, async (req, res) => {
     const service = await database;
     const lobby = await service.lobbyRepository.getByCode(req.params.lobbyCode);
-    if(lobby === undefined){
-        return res.status(404).send();
-    }
-    else{
-        const player = new Player(req.body.player.username);
-        lobby.players.push(player)
-        await service.lobbyRepository.update(lobby);
-        return res.send(lobby);
-    }
+
+    if(lobby === undefined) return res.status(404).send();
+    
+    const player = new Player(req.body.player.username);
+    lobby.players.push(player)
+    await service.lobbyRepository.update(lobby);
+    return res.send(lobby);
 });
 
 const server = app.listen(0, () => {
