@@ -9,14 +9,18 @@ export class Fixture {
     static profileName = "realDonaldTrump"
     static lobbyCode = "QNYDKA";
     static username = "WiseAnt";
-    static player = () => new Player("WiseAnt");
+    static player = () => new Player("Owner one");
     static profile = () => new Profile(
         Fixture.imageUrl,
         Fixture.profilename,
         Fixture.verified,
         Fixture.profileName);
     
-    static lobbby = () => new Lobby(Fixture.lobbyCode, Fixture.player());
+    static lobbby = () => {
+        const lobby = new Lobby(Fixture.lobbyCode);
+        lobby.owner = Fixture.player();
+        return lobby;
+    };
     
     static undefined: any;
 }

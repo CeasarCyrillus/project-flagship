@@ -9,7 +9,7 @@ describe("Lobby", () => {
             const shortId = "SHORT";
 
             expect(() => {
-                new Lobby(shortId, Fixture.player());
+                new Lobby(shortId);
             }).Throw("Lobby id have to be 6 letters or more")
         });
 
@@ -17,12 +17,12 @@ describe("Lobby", () => {
             const id = "LongId";
 
             expect(() => {
-                new Lobby(id, Fixture.player());
+                new Lobby(id);
             }).Throw("Lobby id have to be uppercase");
         })
 
         it("should have random default value", () => {
-            const lobby = new Lobby(Fixture.undefined, Fixture.player())
+            const lobby = new Lobby(Fixture.undefined)
             
             expect(lobby.code).to.not.be.undefined;
         })
@@ -30,7 +30,7 @@ describe("Lobby", () => {
 
     describe("description", () => {
         it("should have sensible default value based on id not defined", () => {
-            const lobby = new Lobby(Fixture.lobbyCode, Fixture.player());
+            const lobby = new Lobby(Fixture.lobbyCode);
 
             expect(lobby.description).to.be.equal(`Lobby for game #${Fixture.lobbyCode}`);
         });
@@ -44,17 +44,21 @@ describe("Lobby", () => {
     });
 
     describe("owner", () => {
-        it("should throw error when undefined", () => {
-            expect(() => {
-                new Lobby(Fixture.lobbyCode, Fixture.undefined);
-            }).Throw("Lobby must have owner");
-        });
-
         it("should be added to players list", () => {
-            const owner = new Player(Fixture.username);
+            const lobby = new Lobby(Fixture.lobbyCode);
+            lobby.owner = new Player(Fixture.username);
             
-            const lobby = new Lobby(Fixture.lobbyCode, owner);
-            expect(lobby.players).contain(owner);
+            expect(lobby.getPlayers()).contain(lobby.owner);
         })
     });
+
+    describe("players", () => {
+        it("should throw error when duplicated username", () => {
+            const lobby = new Lobby(Fixture.lobbyCode);
+            lobby.owner = Fixture.player();
+            expect(() => {
+                lobby.addPlayer(Fixture.player());
+            }).Throw("Username isn't unique");
+        });
+    })
 });

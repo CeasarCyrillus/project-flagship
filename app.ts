@@ -4,8 +4,6 @@ import { Config } from "./test/web/web.config";
 import { Lobby } from "./domain/lobby";
 import { Player } from "./domain/player";
 import { getDatabaseConnection, connectDatabase } from "./service/service";
-import LobbyEntity from "./service/entity/lobby.entity";
-import PlayerEntity from "./service/entity/player.entity";
 
 export const app = express();
 
@@ -18,12 +16,9 @@ const database = connectDatabase(config);
 // Create Lobby
 app.post(Config.baseUrlLobby, async (req, res) => {
     const service = await database;
-
-    const owner = new Player(req.body.owner.username);
-    const lobby = new Lobby(req.body.code, owner, req.body.description);
-    
+    const lobby = new Lobby(req.body.code, req.body.description);
+    lobby.owner = new Player(req.body.owner.username);
     await service.lobbyRepository.add(lobby);
-    
     return res.status(201).send(lobby);  
 });
 
@@ -35,7 +30,7 @@ app.patch(`${Config.baseUrlLobby}/:lobbyCode`, async (req, res) => {
     if(lobby === undefined) return res.status(404).send();
     
     const player = new Player(req.body.player.username);
-    lobby.players.push(player)
+    lobby.addPlayer(player);
     await service.lobbyRepository.update(lobby);
     return res.send(lobby);
 });

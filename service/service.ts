@@ -4,6 +4,7 @@ import LobbyEntity from "./entity/lobby.entity";
 import { Lobby } from "../domain/lobby";
 import { Player } from "../domain/player";
 import PlayerEntity from "./entity/player.entity";
+
 export const getDatabaseConnection = (environment : string) => {
     if(environment === "development") {
         return developmentDatabaseConfig;
@@ -22,8 +23,10 @@ export const connectDatabase = async (config: ConnectionOptions): Promise<Servic
 
 class LobbyRepository {
     private repository: Repository<LobbyEntity>;
+    private connection: Connection;
     constructor(conn: Connection) {
         this.repository = conn.getRepository(LobbyEntity);
+        this.connection = conn;
     }
 
     private toEntity = (lobby: Lobby) => {
@@ -31,7 +34,7 @@ class LobbyRepository {
         entity.code = lobby.code;
         entity.description = lobby.description;
 
-        entity.players = lobby.players.map(player => {
+        entity.players = lobby.getPlayers().map(player => {
             const isOwner = player.username === lobby.owner.username;
             return new PlayerEntity(player.username, isOwner);
         });
@@ -40,9 +43,17 @@ class LobbyRepository {
     }
 
     private toDomain = (entity: LobbyEntity) => {
-        const owner = new Player(entity.players.find(player => player.isOwner).username);
-        const lobby = new Lobby(entity.code, owner, entity.description);
-        lobby.players = entity.players.map(entity => new Player(entity.username))
+        const lobby = new Lobby(entity.code, entity.description);
+
+        entity.players.forEach(playerEntity => {
+            const player = new Player(playerEntity.username);
+            if(playerEntity.isOwner) {
+                lobby.owner = player;
+            } else {
+                lobby.addPlayer(player);
+            }
+        });
+
         lobby.id = entity.id;
         return lobby;
     }
@@ -76,6 +87,11 @@ class LobbyRepository {
         await this.save(entity);
 
         return this.toDomain(entity);
+    }
+
+
+    public dropTable = (): Promise<void> => {
+        return this.connection.dropDatabase();
     }
 }
 

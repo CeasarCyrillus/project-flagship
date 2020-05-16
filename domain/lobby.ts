@@ -16,18 +16,22 @@ export class Lobby {
     public code: string;
     public description: string;
     public owner: Player;
-    public players: Player[];
+    private players: Player[] = new Array<Player>();
 
-    constructor(code: string, owner: Player, description?: string) {
+    constructor(code: string, description?: string) {
         if(!code) code = getRandomCode();
         if(code.length < 6) throw Error("Lobby id have to be 6 letters or more");
         if(code.toUpperCase() !== code) throw Error("Lobby id have to be uppercase");
-        if(owner === undefined) throw Error("Lobby must have owner");
         
         this.code = code;
         this.description = description ? description : `Lobby for game #${code}`;
-        this.owner = owner;
-        this.players = new Array<Player>();
-        this.players.push(owner);
     }
+
+    public addPlayer(player: Player): void {
+        const playerUsernameExists = this.getPlayers().findIndex(p => player.username === p.username) !== -1;
+        if(playerUsernameExists) throw new Error("Username isn't unique");
+        this.players.push(player);
+    }
+
+    public getPlayers = () => [this.owner, ...this.players];
 }
