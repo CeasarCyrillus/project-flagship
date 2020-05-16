@@ -1,8 +1,9 @@
-import { Player } from "./player";
+import Player from "./player.ts";
+import InvalidLobbyCodeError from "./exceptions/invalidLobbyCode.ts";
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 const getRandomCode = () => {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     const result = new Array();
     for(let i = 0; i < 6; i++){
         const index = Math.floor(Math.random() * letters.length);
@@ -11,17 +12,15 @@ const getRandomCode = () => {
     return result.join("");
 }
 
-export class Lobby {
-    public id: number;
+class Lobby {
     public code: string;
     public description: string;
-    public owner: Player;
     private players: Player[] = new Array<Player>();
 
-    constructor(code: string, description?: string) {
+    constructor(code?: string, description?: string) {
         if(!code) code = getRandomCode();
-        if(code.length < 6) throw Error("Lobby id have to be 6 letters or more");
-        if(code.toUpperCase() !== code) throw Error("Lobby id have to be uppercase");
+        if(code.length < 6) throw new InvalidLobbyCodeError("Lobby code have to be 6 letters or more");
+        if(code.toUpperCase() !== code) throw new InvalidLobbyCodeError("Lobby code have to be uppercase");
         
         this.code = code;
         this.description = description ? description : `Lobby for game #${code}`;
@@ -33,5 +32,7 @@ export class Lobby {
         this.players.push(player);
     }
 
-    public getPlayers = () => [this.owner, ...this.players];
+    public getPlayers = () => [...this.players];
 }
+
+export default Lobby;
