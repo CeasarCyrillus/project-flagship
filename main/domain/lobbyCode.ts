@@ -1,4 +1,4 @@
-import InvalidLobbyCodeError from "./exceptions/invalidLobbyCode.ts";
+import InvalidLobbyCodeError from "./error/invalidLobbyCodeError.ts";
 
 const getRandomCode = () => {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");

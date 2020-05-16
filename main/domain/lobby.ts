@@ -1,10 +1,14 @@
 import LobbyCode from "./lobbyCode.ts";
+import InvalidLobbyOwnerError from "./error/invalidLobbyOwnerError.ts";
 
 class Lobby {
-    public code: LobbyCode;
-    public description: string;
+    public readonly owner: string;
+    public readonly code: LobbyCode;
+    public readonly description: string;
 
-    constructor(code?: string, description?: string) {
+    constructor(owner: string, code?: string, description?: string) {
+        if(owner === undefined) throw new InvalidLobbyOwnerError("Lobby must have owner");
+        this.owner = owner;
         this.code = new LobbyCode(code);
         this.description = description ? description : `Lobby for game #${this.code}`;
     }
