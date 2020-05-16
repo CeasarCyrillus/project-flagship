@@ -1,21 +1,17 @@
 import { Drash } from "https://deno.land/x/drash@v1.0.0/mod.ts";
-
-class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"];
-  public GET() {
-    this.response.body = "Hello World! deno + Drash is cool!";
-    return this.response;
-  }
-}
+import LobbyResource from "./main/web/lobbyResource.ts";
+import { getFreePort } from 'https://deno.land/x/free_port@v1.2.0/mod.ts'
+import { green } from "https://deno.land/std/fmt/colors.ts";
 
 const server = new Drash.Http.Server({
-  response_output: "text/html",
-  resources: [HomeResource]
+  response_output: "application/json",
+  resources: [LobbyResource]
 });
 
-server.run({
+const port = await getFreePort(3000);
+await server.run({
   hostname: "localhost",
-  port: 1447
+  port
 });
 
-console.log("Server listening: http://localhost:1447");
+console.log(green("\nServer listening: http://localhost:" + port));
