@@ -25,7 +25,9 @@ class LobbyResource extends Drash.Http.Resource{
   catch(error){
     if(error instanceof InvalidLobbyCodeError) {
       this.response.status_code = 400;
-
+      this.response.body = {
+        message: error.message
+      }
     }
   }
   
