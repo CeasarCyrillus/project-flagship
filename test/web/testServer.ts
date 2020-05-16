@@ -15,7 +15,6 @@ const runTestServer = async (resources: typeof Drash.Http.Resource[])=> {
         port
       });
     
-    console.log(gray(italic("\nrunning test server on port " + port)));
     return server;
 }
 
