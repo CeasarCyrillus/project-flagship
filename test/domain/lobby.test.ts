@@ -1,4 +1,4 @@
-import Lobby from "../../domain/lobby.ts";
+import Lobby from "../../main/domain/lobby.ts";
 import { assertNotEquals, assertStrContains } from "https://deno.land/std/testing/asserts.ts"
 
 Deno.test("Lobby has default lobby code", () => {

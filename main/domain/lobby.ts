@@ -1,4 +1,3 @@
-import Player from "./player.ts";
 import LobbyCode from "./lobbyCode.ts";
 
 class Lobby {

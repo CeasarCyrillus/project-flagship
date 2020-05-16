@@ -1,17 +1,17 @@
-import InvalidLobbyCodeError from "../../domain/exceptions/invalidLobbyCode.ts";
+import InvalidLobbyCodeError from "../../main/domain/exceptions/invalidLobbyCode.ts";
 import { assertThrows } from "https://deno.land/std/testing/asserts.ts"
-import LobbyCode from "../../domain/lobbyCode.ts";
+import LobbyCode from "../../main/domain/lobbyCode.ts";
 
 Deno.test("Lobby code have to be 6 letters or more", () =>
 {
     assertThrows(() => {
-        const lobby = new LobbyCode("BAD");
+        new LobbyCode("BAD");
     }, InvalidLobbyCodeError, "Lobby code have to be 6 letters or more")
 });
 
 Deno.test("Lobby code have to be uppercase", () =>
 {
     assertThrows(() => {
-        const lobby = new LobbyCode("bAdCustomCode");
+        new LobbyCode("bAdCustomCode");
     }, InvalidLobbyCodeError, "Lobby code have to be uppercase")
 });
