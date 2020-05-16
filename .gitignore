@@ -2,4 +2,3 @@
 *.js
 settings.json
 **/*.map
-/database/
