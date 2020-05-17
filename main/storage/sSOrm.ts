@@ -1,6 +1,7 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import InitalizedMultipleTimesError from "./error/initalizedMultipleTimesError.ts"
 import UseBeforeInitalizedError from "./error/useBeforeInitalizedError.ts";
+import EntityNotFoundError from "./error/entityNotFoundError.ts";
 
 export enum StorageLogLevel {
     all,
@@ -37,8 +38,14 @@ class Repository<T extends IEntity> {
         return JSON.parse(JSON.stringify(entity)) as T;
     }
 
+    public findOrThrow(id: string): T {
+        const entity = this.find(id);
+        if(entity === null) throw new EntityNotFoundError();
+        return entity;
+    }
+
     public update(entity: T) {
-        //if(!entity.id || !this.find(entity.id!)) throw new UpdateNonExistingEntityError();
+        if(!entity.id || !this.find(entity.id)) throw new EntityNotFoundError()
         this.data[entity.id!] = entity;
     }
 
@@ -47,7 +54,7 @@ class Repository<T extends IEntity> {
     }
 
     public delete(id: string) {
-        // Todo: throw error if id is undefined | id can't be found
+        if(!id || !this.data[id]) throw new EntityNotFoundError();
         delete this.data[id];
     }
 

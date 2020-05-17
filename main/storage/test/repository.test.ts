@@ -1,7 +1,8 @@
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts"
-import { bgGreen, black, bold, red } from "https://deno.land/std/fmt/colors.ts";
+import { assertEquals, assertThrows } from "https://deno.land/std/testing/asserts.ts"
+import { bgGreen, black, bold, red, bgRed } from "https://deno.land/std/fmt/colors.ts";
 import MockEntity from "./mockEntity.ts";
 import sSOrm from "../sSOrm.ts"
+import EntityNotFoundError from "../error/entityNotFoundError.ts";
 
 const getRepository = () => {
     const db = new sSOrm();
@@ -35,12 +36,34 @@ Deno.test("\t can find stored entity", () => {
     assertEquals(repo.find(id)?.simpleStringField, entity.simpleStringField);
 });
 
+Deno.test("\t can update entity", () => {
+    const repo = getRepository();
+    const entity = new MockEntity();
+    const id = repo.add(entity);
+    
+    entity.simpleList.push("Ain't no thing but a chicken wing!");
+    repo.update(entity);
+    const storedEntity = repo.find(id)!;
 
-Deno.test("\t return null no stored entity is found", () => {
+    assertEquals(storedEntity.simpleList[0], "Ain't no thing but a chicken wing!");
+});
+
+Deno.test("\t return null if no stored entity is found", () => {
     const repo = getRepository();
     const id = "randomId";
 
     assertEquals(null, repo.find(id));
+});
+
+
+Deno.test("\t can delete stored entity", () => {
+    const repo = getRepository();
+    const entity = new MockEntity();
+    const id = repo.add(entity);
+
+    repo.delete(id);
+
+    assertEquals(repo.find(id), null);
 });
 
 Deno.test("\t return id when entity is added", () => {
@@ -49,6 +72,35 @@ Deno.test("\t return id when entity is added", () => {
     const id = repo.add(entity);
 
     assertEquals(entity.id, id);
+});
+
+Deno.test(bgRed(black("Repository")), () => {});
+Deno.test("\t delete throws if entity can't be found", () => {
+    const repo = getRepository();
+    const id = "random id";
+    
+    assertThrows(() => {
+        repo.delete(id);
+    }, EntityNotFoundError)
+});
+
+Deno.test("\t update throws if entity can't be found", () => {
+    const repo = getRepository();
+    const entity = new MockEntity();
+    entity.id = "random id"
+
+    assertThrows(() => {
+        repo.update(entity);
+    }, EntityNotFoundError)
+});
+
+Deno.test("\t find or throw throws if entity can't be found", () => {
+    const repo = getRepository();
+    const id = "random id";
+    
+    assertThrows(() => {
+        repo.findOrThrow(id);
+    }, EntityNotFoundError)
 });
 
 Deno.test(bgGreen(black("Repository imutability")), () => {});
