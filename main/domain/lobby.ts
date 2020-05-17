@@ -1,8 +1,10 @@
 import LobbyCode from "./lobbyCode.ts";
 import InvalidLobbyOwnerError from "./error/invalidLobbyOwnerError.ts";
+import { IEntity } from "../storage/sSOrm.ts";
 
-class Lobby {
-    public readonly owner: string;
+class Lobby implements IEntity{
+    id?: string | null;
+    public owner: string;
     public readonly code: LobbyCode;
     public readonly description: string;
 

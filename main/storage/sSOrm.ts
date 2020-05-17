@@ -40,7 +40,18 @@ class Repository<T extends IEntity> {
         this.data[entity.id!] = entity;
     }
 
+    public findAll(condition: (entity: T) => boolean): T[] {
+        return Object.values(this.data).filter((entity) => condition(entity));
+    }
 
+    public delete(id: string) {
+        // Todo: throw error if id is undefined | id can't be found
+        delete this.data[id];
+    }
+
+    public drop() {
+        this.data = {};
+    }
 }
 
 
@@ -65,19 +76,19 @@ class sSOrm {
         return null;
     }
 
-    private createNewRepository(entity: Function & IEntity): void {
-        this.repositories[entity.name] = new Repository<typeof entity>(this);
+    private createNewRepository<T>(name: string): void {
+        this.repositories[name] = new Repository<T>(this);
     }
 
-    public getRepository(entity: Function&IEntity) {
-        const existingRepository = this.getExistingRepository(entity.name);
-        if(existingRepository === null) this.createNewRepository(entity);
-        return this.repositories[entity.name];
+    public getRepository<T>(name: string) {
+        const existingRepository = this.getExistingRepository(name);
+        if(existingRepository === null) this.createNewRepository<T>(name);
+        return this.repositories[name] as Repository<T>;
     }
 }
 
 const db = new sSOrm();
-const repo = db.getRepository(Lobby);
+const repo = db.getRepository<Lobby>(Lobby.name);
 
 const lobby = new Lobby("Ceasar");
 
@@ -86,7 +97,6 @@ const storedLobby = repo.find(id);
 
 console.log(storedLobby)
 
-lobby.description = "Some other boring description";
 repo.update(lobby);
 
 console.log(repo.find(id));
