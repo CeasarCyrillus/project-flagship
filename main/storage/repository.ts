@@ -12,7 +12,7 @@ class Repository<T extends IEntity> {
         this.data = {};
         this.logLevel = logLevel;
         this.provider = provider;
-        
+
         // Todo create inheriting repository based on provider type?
         if(provider === Provider.file) {
             this.fileName = `${repositoryName}.json`;
@@ -63,6 +63,12 @@ class Repository<T extends IEntity> {
 
         // Todo create inheriting repository based on provider type?
         if(this.provider === Provider.file) Deno.removeSync(this.fileName!);
+    }
+
+    public save = () => {
+        if(this.provider !== Provider.file) return;
+        const encoder = new TextEncoder();
+        Deno.writeFileSync(this.fileName!, encoder.encode(JSON.stringify(this.data)));
     }
 }
 

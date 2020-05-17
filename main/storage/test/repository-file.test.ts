@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "https://deno.land/std/testing/asserts.ts"
+import { assertThrows, assertStrContains } from "https://deno.land/std/testing/asserts.ts"
 import { bgGreen, black } from "https://deno.land/std/fmt/colors.ts";
 import MockEntity from "./mockEntity.ts";
 import sSOrm, { Provider } from "../sSOrm.ts"
@@ -27,4 +27,18 @@ Deno.test("\t removes repository file when dropped", () => {
     assertThrows(() => {
         Deno.openSync(repo.fileName!, {read: true, write: false}).close();
     }, Deno.errors.NotFound, "No such file or directory (os error 2)")
+});
+
+
+Deno.test("\t save entity to file when save is called", () => {
+    const repo = getRepository();
+    const entity = new MockEntity();
+    entity.simpleStringField = "Hello World!";
+    repo.add(entity);
+
+    repo.save();
+
+    const decoder = new TextDecoder();
+    const content = Deno.readFileSync(repo.fileName!);
+    assertStrContains(decoder.decode(content), "Hello World!");
 });
