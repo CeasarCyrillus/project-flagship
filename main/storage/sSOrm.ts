@@ -1,5 +1,6 @@
 import Lobby from "../domain/lobby.ts";
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
+import UpdateNonExistingEntityError from "./error/updateNonExistingEntityError.ts"
 
 enum StorageLogLevel {
     all,
@@ -24,7 +25,6 @@ class Repository<T extends IEntity> {
     };
 
     public add(entity: T) {
-        // Todo: throw error/warning when adding entity with id != null or undefined
         const id = v4.generate();
         entity.id = id;
         this.data[entity.id] = entity;
@@ -36,7 +36,7 @@ class Repository<T extends IEntity> {
     }
 
     public update(entity: T) {
-        // Todo: throw error if id is undefined | id can't be found
+        if(!entity.id || !this.find(entity.id!)) throw new UpdateNonExistingEntityError();
         this.data[entity.id!] = entity;
     }
 
@@ -76,13 +76,9 @@ class sSOrm {
         return null;
     }
 
-    private createNewRepository<T>(name: string): void {
-        this.repositories[name] = new Repository<T>(this);
-    }
-
     public getRepository<T>(name: string) {
         const existingRepository = this.getExistingRepository(name);
-        if(existingRepository === null) this.createNewRepository<T>(name);
+        if(existingRepository === null) this.repositories[name] = new Repository<T>(this);
         return this.repositories[name] as Repository<T>;
     }
 }
@@ -95,7 +91,7 @@ const lobby = new Lobby("Ceasar");
 const id = repo.add(lobby);
 const storedLobby = repo.find(id);
 
-console.log(storedLobby)
+console.log(lobby)
 
 repo.update(lobby);
 
