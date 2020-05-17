@@ -15,7 +15,8 @@ Deno.test("\t creates repository file when created", () => {
 
     const fileName = repo.fileName!;
     Deno.openSync(fileName, {read: true, write: false}).close();
-    Deno.removeSync(fileName);
+    
+    repo.drop();
 });
 
 Deno.test("\t removes repository file when dropped", () => {
