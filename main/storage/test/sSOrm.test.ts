@@ -13,10 +13,10 @@ Deno.test("\t without config is in memory", () => {
     assert(db.inMemory);
 });
 
-Deno.test("\t without config log level is set to all", () => {
+Deno.test("\t without config log level is set to error only", () => {
     const db = new sSOrm()
     
-    assertEquals(db.logLevel, StorageLogLevel.all);
+    assertEquals(db.logLevel, StorageLogLevel.onlyError);
 });
 
 Deno.test("\t before initalized created is false", () => {
@@ -47,10 +47,9 @@ Deno.test("\t different identifiers for the same type produce different reposito
     const db = new sSOrm();
     db.init();
 
-    const firstRepository = db.getRepository<MockEntity>("identifier");
-    const secondRepository = db.getRepository<MockEntity>("another identifier");
+    const firstRepository = db.getRepository<MockEntity>("identifier1");
+    const secondRepository = db.getRepository<MockEntity>("identifier2");
 
-    assertEquals(firstRepository, secondRepository) // They should still contain the same data!
     assert(firstRepository != secondRepository);
 })
 //#endregion

@@ -2,6 +2,7 @@ import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import InitalizedMultipleTimesError from "./error/initalizedMultipleTimesError.ts"
 import UseBeforeInitalizedError from "./error/useBeforeInitalizedError.ts";
 import EntityNotFoundError from "./error/entityNotFoundError.ts";
+import { gray, italic } from "https://deno.land/std/fmt/colors.ts";
 
 export enum StorageLogLevel {
     all,
@@ -17,8 +18,14 @@ export interface IEntity {
     id: string | null;
 };
 
+export const sSOrmLogInfo = (message: string) => {
+    const now = new Date().toUTCString();
+    console.info(gray(italic(`${now}\t|\t${message}`)));
+}
+
 class Repository<T extends IEntity> {
     private storage: sSOrm;
+    private logInfo = () => this.storage.logLevel === StorageLogLevel.all;
     private data: { [id: string]: T;}
     constructor(storage: sSOrm){
         this.storage = storage;
@@ -29,6 +36,7 @@ class Repository<T extends IEntity> {
         const id = v4.generate();
         this.data[id] = JSON.parse(JSON.stringify(entity)) as T;
         entity.id = id;
+        if(this.logInfo()) sSOrmLogInfo(`added entity with id '${id}'`);
         return id;
     }
 
@@ -46,7 +54,8 @@ class Repository<T extends IEntity> {
 
     public update(entity: T) {
         if(!entity.id || !this.find(entity.id)) throw new EntityNotFoundError()
-        this.data[entity.id!] = entity;
+        if(this.logInfo()) sSOrmLogInfo(`updated entity with id '${entity.id}'`);
+        this.data[entity.id] = entity;
     }
 
     public findAll(condition: (entity: T) => boolean): T[] {
@@ -56,6 +65,7 @@ class Repository<T extends IEntity> {
     public delete(id: string) {
         if(!id || !this.data[id]) throw new EntityNotFoundError();
         delete this.data[id];
+        if(this.logInfo()) sSOrmLogInfo(`deleted entity with id '${id}'`);
     }
 
     public drop() {
@@ -66,6 +76,7 @@ class Repository<T extends IEntity> {
 class sSOrm {
     public readonly inMemory: boolean;
     public readonly logLevel: StorageLogLevel;
+    private logInfo = () => this.logLevel === StorageLogLevel.all;
 
     private _created: boolean;
     public get created(): boolean {
@@ -76,19 +87,21 @@ class sSOrm {
   
     constructor(storageConfig?: sSOrmConfig) {
         this.inMemory = storageConfig?.inMemory || true;
-        this.logLevel = storageConfig?.logLevel || StorageLogLevel.all;
+        this.logLevel = storageConfig?.logLevel || StorageLogLevel.onlyError;
         this._created = false;
     }
 
     public reset = (): void => {
         this._created = false;
         this.init();
+        if(this.logInfo()) sSOrmLogInfo(`reset storage`);
     } 
 
     public init = (): void => {
         if(this.created) throw new InitalizedMultipleTimesError();
         this.repositories = {};
         this._created = true;
+        if(this.logInfo()) sSOrmLogInfo(`created storage`);
     }
 
     private getExistingRepository(entityName: string): Repository<IEntity> | null {
@@ -98,11 +111,15 @@ class sSOrm {
         return null;
     }
 
-    public getRepository<T extends IEntity>(respositoryName: string) {
+    public getRepository<T extends IEntity>(repositoryName: string) {
         if(!this.created) throw new UseBeforeInitalizedError();
-        const existingRepository = this.getExistingRepository(respositoryName);
-        if(existingRepository === null) this.repositories[respositoryName] = new Repository<T>(this);
-        return this.repositories[respositoryName] as Repository<T>;
+        const existingRepository = this.getExistingRepository(repositoryName);
+        if(existingRepository === null){
+            this.repositories[repositoryName] = new Repository<T>(this);
+            if(this.logInfo()) sSOrmLogInfo(`created repository '${repositoryName}'`);
+        }
+        if(this.logInfo()) sSOrmLogInfo(`get repository '${repositoryName}'`);
+        return this.repositories[repositoryName] as Repository<T>;
     }
 }
 
