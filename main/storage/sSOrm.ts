@@ -1,8 +1,10 @@
 import Lobby from "../domain/lobby.ts";
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import UpdateNonExistingEntityError from "./error/updateNonExistingEntityError.ts"
+import MockEntity from "./test/mockEntity.ts";
+import UseBeforeInitalizedError from "./error/useBeforeInitalizedError.ts";
 
-enum StorageLogLevel {
+export enum StorageLogLevel {
     all,
     onlyError,
 };
@@ -13,7 +15,7 @@ export interface sSOrmConfig {
 };
 
 export interface IEntity {
-    id?: string | null;
+    id: string | null;
 };
 
 class Repository<T extends IEntity> {
@@ -36,7 +38,7 @@ class Repository<T extends IEntity> {
     }
 
     public update(entity: T) {
-        if(!entity.id || !this.find(entity.id!)) throw new UpdateNonExistingEntityError();
+        //if(!entity.id || !this.find(entity.id!)) throw new UpdateNonExistingEntityError();
         this.data[entity.id!] = entity;
     }
 
@@ -54,19 +56,26 @@ class Repository<T extends IEntity> {
     }
 }
 
-
 class sSOrm {
     public readonly inMemory: boolean;
     public readonly logLevel: StorageLogLevel;
-    public readonly created: boolean;
 
-    private readonly repositories: {[entityName: string]: Repository<IEntity>};
+    private _created: boolean;
+    public get created(): boolean {
+        return this._created;
+    }
+
+    private repositories!: {[entityName: string]: Repository<IEntity>};
   
     constructor(storageConfig?: sSOrmConfig) {
         this.inMemory = storageConfig?.inMemory || true;
         this.logLevel = storageConfig?.logLevel || StorageLogLevel.all;
-        this.created = false;
+        this._created = false;
+    }
+
+    public init = (): void => {
         this.repositories = {};
+        this._created = true;
     }
 
     private getExistingRepository(entityName: string): Repository<IEntity> | null {
@@ -76,23 +85,12 @@ class sSOrm {
         return null;
     }
 
-    public getRepository<T>(name: string) {
-        const existingRepository = this.getExistingRepository(name);
-        if(existingRepository === null) this.repositories[name] = new Repository<T>(this);
-        return this.repositories[name] as Repository<T>;
+    public getRepository<T extends IEntity>(respositoryName: string) {
+        if(!this.created) throw new UseBeforeInitalizedError();
+        const existingRepository = this.getExistingRepository(respositoryName);
+        if(existingRepository === null) this.repositories[respositoryName] = new Repository<T>(this);
+        return this.repositories[respositoryName] as Repository<T>;
     }
 }
 
-const db = new sSOrm();
-const repo = db.getRepository<Lobby>(Lobby.name);
-
-const lobby = new Lobby("Ceasar");
-
-const id = repo.add(lobby);
-const storedLobby = repo.find(id);
-
-console.log(lobby)
-
-repo.update(lobby);
-
-console.log(repo.find(id));
+export default sSOrm;
