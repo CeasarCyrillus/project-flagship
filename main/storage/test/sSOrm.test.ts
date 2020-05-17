@@ -1,4 +1,5 @@
 import UseBeforeInitalizedError from "../error/useBeforeInitalizedError.ts"
+import InitalizedMultipleTimesError from "../error/initalizedMultipleTimesError.ts"
 import { assertNotEquals, assertStrContains, assertThrows, assert, assertEquals } from "https://deno.land/std/testing/asserts.ts"
 import { bgGreen, black, bgRed, yellow } from "https://deno.land/std/fmt/colors.ts";
 import MockEntity from "./mockEntity.ts";
@@ -62,6 +63,15 @@ Deno.test("\t throws if geting repository before created", () => {
     assertThrows(() => {
         db.getRepository<MockEntity>(MockEntity.name);
     }, UseBeforeInitalizedError)
+});
+
+Deno.test("\t throws if created more than once", () => {
+    const db = new sSOrm();
+    db.init();
+
+    assertThrows(() => {
+        db.init();
+    }, InitalizedMultipleTimesError)
 })
 
 //#endregion

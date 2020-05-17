@@ -1,7 +1,5 @@
-import Lobby from "../domain/lobby.ts";
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
-import UpdateNonExistingEntityError from "./error/updateNonExistingEntityError.ts"
-import MockEntity from "./test/mockEntity.ts";
+import InitalizedMultipleTimesError from "./error/initalizedMultipleTimesError.ts"
 import UseBeforeInitalizedError from "./error/useBeforeInitalizedError.ts";
 
 export enum StorageLogLevel {
@@ -28,13 +26,15 @@ class Repository<T extends IEntity> {
 
     public add(entity: T) {
         const id = v4.generate();
+        this.data[id] = JSON.parse(JSON.stringify(entity)) as T;
         entity.id = id;
-        this.data[entity.id] = entity;
         return id;
     }
 
     public find(id: string): T | null {
-        return this.data[id] || null;
+        const entity = this.data[id];
+        if(entity === undefined) return null;
+        return JSON.parse(JSON.stringify(entity)) as T;
     }
 
     public update(entity: T) {
@@ -73,7 +73,13 @@ class sSOrm {
         this._created = false;
     }
 
+    public reset = (): void => {
+        this._created = false;
+        this.init();
+    } 
+
     public init = (): void => {
+        if(this.created) throw new InitalizedMultipleTimesError();
         this.repositories = {};
         this._created = true;
     }
