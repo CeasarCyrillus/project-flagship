@@ -3,14 +3,14 @@ import InitalizedMultipleTimesError from "../error/initalizedMultipleTimesError.
 import { assertNotEquals, assertStrContains, assertThrows, assert, assertEquals } from "https://deno.land/std/testing/asserts.ts"
 import { bgGreen, black, bgRed, yellow } from "https://deno.land/std/fmt/colors.ts";
 import MockEntity from "./mockEntity.ts";
-import sSOrm, { StorageLogLevel } from "../sSOrm.ts"
+import sSOrm, { StorageLogLevel, Provider } from "../sSOrm.ts"
 
 //#region sSOrm success
 Deno.test(bgGreen(black("sSOrm")), () => {});
-Deno.test("\t without config is in memory", () => {
+Deno.test("\t without config defaults to inMemory", () => {
     const db = new sSOrm()
     
-    assert(db.inMemory);
+    assertEquals(db.provider, Provider.inMemory);
 });
 
 Deno.test("\t without config log level is set to error only", () => {

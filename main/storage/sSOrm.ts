@@ -3,14 +3,20 @@ import InitalizedMultipleTimesError from "./error/initalizedMultipleTimesError.t
 import UseBeforeInitalizedError from "./error/useBeforeInitalizedError.ts";
 import EntityNotFoundError from "./error/entityNotFoundError.ts";
 import { gray, italic } from "https://deno.land/std/fmt/colors.ts";
+import { ensureFile, ensureFileSync, ensureDir, ensureDirSync } from "https://deno.land/std/fs/mod.ts";
 
 export enum StorageLogLevel {
     all,
     onlyError,
 };
 
+export enum Provider {
+    inMemory,
+    file
+};
+
 export interface sSOrmConfig {
-    inMemory?: boolean;
+    provider?: Provider;
     logLevel?: StorageLogLevel;
 };
 
@@ -25,13 +31,19 @@ export const sSOrmLogInfo = (message: string) => {
 
 class Repository<T extends IEntity> {
     private storage: sSOrm;
-    private logInfo = () => this.storage.logLevel === StorageLogLevel.all;
-    private data: { [id: string]: T;}
-    constructor(storage: sSOrm){
+    private data: { [id: string]: T;} 
+    public fileName: string | null = null;
+    constructor(storage: sSOrm, repositoryName: string){
         this.storage = storage;
         this.data = {};
+        
+        if(this.storage.provider === Provider.file) {
+            this.fileName = `${repositoryName}.json`;
+            ensureFileSync(this.fileName);
+        }
     };
-
+    
+    private logInfo = () => this.storage.logLevel === StorageLogLevel.all;
     public add(entity: T) {
         const id = v4.generate();
         this.data[id] = JSON.parse(JSON.stringify(entity)) as T;
@@ -68,13 +80,14 @@ class Repository<T extends IEntity> {
         if(this.logInfo()) sSOrmLogInfo(`deleted entity with id '${id}'`);
     }
 
-    public drop() {
+    public drop(): void {
         this.data = {};
+        if(this.storage.provider === Provider.file) Deno.removeSync(this.fileName!);
     }
 }
 
 class sSOrm {
-    public readonly inMemory: boolean;
+    public readonly provider: Provider;
     public readonly logLevel: StorageLogLevel;
     private logInfo = () => this.logLevel === StorageLogLevel.all;
 
@@ -85,9 +98,12 @@ class sSOrm {
 
     private repositories!: {[entityName: string]: Repository<IEntity>};
   
-    constructor(storageConfig?: sSOrmConfig) {
-        this.inMemory = storageConfig?.inMemory || true;
-        this.logLevel = storageConfig?.logLevel || StorageLogLevel.onlyError;
+    constructor(storageConfig: sSOrmConfig = {
+        provider: Provider.inMemory,
+        logLevel: StorageLogLevel.onlyError
+    }) {
+        this.provider = storageConfig.provider || Provider.inMemory;
+        this.logLevel = storageConfig.logLevel || StorageLogLevel.onlyError;
         this._created = false;
     }
 
@@ -115,7 +131,7 @@ class sSOrm {
         if(!this.created) throw new UseBeforeInitalizedError();
         const existingRepository = this.getExistingRepository(repositoryName);
         if(existingRepository === null){
-            this.repositories[repositoryName] = new Repository<T>(this);
+            this.repositories[repositoryName] = new Repository<T>(this, repositoryName);
             if(this.logInfo()) sSOrmLogInfo(`created repository '${repositoryName}'`);
         }
         if(this.logInfo()) sSOrmLogInfo(`get repository '${repositoryName}'`);
