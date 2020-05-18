@@ -1,4 +1,4 @@
-import { assertThrows, assertStrContains } from "https://deno.land/std/testing/asserts.ts"
+import { assertThrows, assertStrContains, assertEquals } from "https://deno.land/std/testing/asserts.ts"
 import { bgGreen, black } from "https://deno.land/std/fmt/colors.ts";
 import MockEntity from "./mockEntity.ts";
 import sSOrm, { Provider } from "../sSOrm.ts"
@@ -41,4 +41,19 @@ Deno.test("\t save entity to file when save is called", () => {
     const decoder = new TextDecoder();
     const content = Deno.readFileSync(repo.fileName!);
     assertStrContains(decoder.decode(content), "Hello World!");
+    repo.drop();
+});
+
+
+Deno.test("\t data persists when loading new instance of sSOrm", () => {
+    let repo = getRepository();
+    const entity = new MockEntity();
+    entity.simpleStringField = "Hello World!";
+    const id = repo.add(entity);
+    repo.save();
+
+    repo = getRepository();
+
+    assertEquals(repo.findOrThrow(id).simpleStringField, "Hello World!");
+    repo.drop();
 });

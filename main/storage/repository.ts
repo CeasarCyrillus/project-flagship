@@ -1,4 +1,4 @@
-import sSOrm, { Provider, IEntity, StorageLogLevel, sSOrmLogInfo } from "./sSOrm.ts";
+import { Provider, IEntity, StorageLogLevel, sSOrmLogInfo } from "./sSOrm.ts";
 import { ensureFileSync } from "https://deno.land/std/fs/mod.ts";
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import EntityNotFoundError from "../storage/error/entityNotFoundError.ts";
@@ -17,6 +17,7 @@ class Repository<T extends IEntity> {
         if(provider === Provider.file) {
             this.fileName = `${repositoryName}.json`;
             ensureFileSync(this.fileName);
+            this.data = this.load()!;
         }
     };
     
@@ -69,6 +70,14 @@ class Repository<T extends IEntity> {
         if(this.provider !== Provider.file) return;
         const encoder = new TextEncoder();
         Deno.writeFileSync(this.fileName!, encoder.encode(JSON.stringify(this.data)));
+    }
+
+    private load = () => {
+        if(this.provider !== Provider.file) return;
+        const decoder = new TextDecoder();
+        const content = decoder.decode(Deno.readFileSync(this.fileName!));
+        if(content === "") return {};
+        return JSON.parse(content) as  { [id: string]: T; };
     }
 }
 
